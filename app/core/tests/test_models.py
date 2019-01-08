@@ -54,11 +54,22 @@ class ModelTests(TestCase):
 
         self.assertEqual(str(tag), tag.name)
 
-    # def test_categories_str(self):
-    #     """Test the categories string representation"""
-    #     categories = models.Categories.objects.create(
-    #         user=sample_user(),
-    #         name='Vegan'
-    #     )
-    #
-    #     self.assertEqual(str(categories), categories.name)
+    def test_categories_str(self):
+        """Test the categories string representation"""
+        categories = models.Categories.objects.create(
+            user=sample_user(),
+            name='Vegan'
+        )
+
+        self.assertEqual(str(categories), categories.name)
+
+    def test_pin_str(self):
+        """Test the recipe string representation"""
+        pin = models.Pin.objects.create(
+            user=sample_user(),
+            business='Storville Coffee',
+            location='Seattle, WA',
+            details='Every hour they release fresh pastries!'
+        )
+
+        self.assertEqual(str(pin), pin.business)

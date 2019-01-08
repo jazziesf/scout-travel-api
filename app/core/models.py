@@ -61,3 +61,19 @@ class Categories(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Pin(models.Model):
+    """Pin object"""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    business = models.CharField(max_length=255)
+    location = models.CharField(max_length=100)
+    details = models.CharField(max_length=100)
+    categories = models.ManyToManyField('Categories')
+    tags = models.ManyToManyField('Tag')
+
+    def __str__(self):
+        return self.business
