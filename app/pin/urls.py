@@ -7,6 +7,8 @@ from pin import views
 router = DefaultRouter()
 router.register('tags', views.TagViewSet)
 router.register('categories', views.CategoriesViewSet)
+router.register('pin', views.PinViewSet)
+
 
 app_name = 'pin'
 

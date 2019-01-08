@@ -2,12 +2,12 @@ from rest_framework import viewsets, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from core.models import Tag, Categories
+from core.models import Tag, Categories, Pin
 
 from pin import serializers
 
 
-class PinViewSet(viewsets.GenericViewSet,
+class BasicPinAttrViewSet(viewsets.GenericViewSet,
                             mixins.ListModelMixin,
                             mixins.CreateModelMixin):
     """Base viewset for user owned pin attributes"""
@@ -54,3 +54,15 @@ class CategoriesViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.C
     def perform_create(self, serializer):
         """Create a new ingredient"""
         serializer.save(user=self.request.user)
+
+
+class PinViewSet(viewsets.ModelViewSet):
+    """Manage pin in the database"""
+    serializer_class = serializers.PinSerializer
+    queryset = Pin.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        """Retrieve the recipes for the authenticated user"""
+        return self.queryset.filter(user=self.request.user)

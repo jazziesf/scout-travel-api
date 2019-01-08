@@ -68,7 +68,8 @@ class ModelTests(TestCase):
         pin = models.Pin.objects.create(
             user=sample_user(),
             business='Storville Coffee',
-            location='Seattle, WA',
+            city='Seattle',
+            state='WA',
             details='Every hour they release fresh pastries!'
         )
 

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.models import Tag, Categories
+from core.models import Tag, Categories, Pin
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -17,4 +17,24 @@ class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categories
         fields = ('id', 'name')
+        read_only_fields = ('id',)
+
+
+class PinSerializer(serializers.ModelSerializer):
+    """Serialize a pin"""
+    categories = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Categories.objects.all()
+    )
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Tag.objects.all()
+    )
+
+    class Meta:
+        model = Pin
+        fields = (
+            'id', 'business', 'city', 'tags', 'state', 'details',
+            'categories',
+        )
         read_only_fields = ('id',)

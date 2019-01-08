@@ -70,8 +70,9 @@ class Pin(models.Model):
         on_delete=models.CASCADE
     )
     business = models.CharField(max_length=255)
-    location = models.CharField(max_length=100)
     details = models.CharField(max_length=100)
+    city = models.CharField(max_length=100, null=True)
+    state = models.CharField(max_length=20, null=True)
     categories = models.ManyToManyField('Categories')
     tags = models.ManyToManyField('Tag')
 
