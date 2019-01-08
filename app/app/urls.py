@@ -18,7 +18,10 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/user/', include('user.urls'))
+    path('api/user/', include('user.urls')),
+    path('api/pin/', include('pin.urls')),
+
+
     # this call looks at the user app and extends to
     # the file in user to urls if it matching the path called
     # it will get passed to url path that is called
