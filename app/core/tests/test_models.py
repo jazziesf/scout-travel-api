@@ -53,3 +53,12 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(tag), tag.name)
+
+    # def test_categories_str(self):
+    #     """Test the categories string representation"""
+    #     categories = models.Categories.objects.create(
+    #         user=sample_user(),
+    #         name='Vegan'
+    #     )
+    #
+    #     self.assertEqual(str(categories), categories.name)
