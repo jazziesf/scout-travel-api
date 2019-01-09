@@ -85,7 +85,7 @@ class Pin(models.Model):
     state = models.CharField(max_length=20, null=True)
     categories = models.ManyToManyField('Categories')
     tags = models.ManyToManyField('Tag')
-    image = models.ImageField(upload_to=pin_image_file_path, null=True)
+    image = models.ImageField(null=True, upload_to=pin_image_file_path)
 
     def __str__(self):
         return self.business

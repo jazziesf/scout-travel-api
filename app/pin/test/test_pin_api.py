@@ -1,3 +1,8 @@
+import tempfile
+import os
+
+from PIL import Image
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
@@ -13,6 +18,11 @@ from pin.serializers import PinSerializer, PinDetailSerializer
 PIN_URL = reverse('pin:pin-list')
 
 
+def image_upload_url(pin_id):
+    """Return URL for pin image upload"""
+    return reverse('pin:pin-upload-image', args=[pin_id])
+
+
 def sample_tag(user, name='Vegan'):
     """Create and return a sample tag"""
     return Tag.objects.create(user=user, name=name)
@@ -22,9 +32,11 @@ def sample_categories(user, name='Coffee Shop'):
     """Create and return a sample categories"""
     return Categories.objects.create(user=user, name=name)
 
+
 def detail_url(pin_id):
     """Return pin detail URL"""
     return reverse('pin:pin-detail', args=[pin_id])
+
 
 def sample_pin(user, **params):
     """Create and return a sample pin"""
@@ -199,3 +211,36 @@ class PrivatePinApiTests(TestCase):
         self.assertEqual(pin.details, payload['details'])
         tags = pin.tags.all()
         self.assertEqual(len(tags), 0)
+
+
+class PinImageUploadTests(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user('user@gmail.com', 'testpass')
+        self.client.force_authenticate(self.user)
+        self.pin = sample_pin(user=self.user)
+
+    def tearDown(self):
+        self.pin.image.delete()
+
+    def test_upload_image_to_pin(self):
+        """Test uploading an image to pin"""
+        url = image_upload_url(self.pin.id)
+        with tempfile.NamedTemporaryFile(suffix='.jpg') as ntf:
+            img = Image.new('RGB', (10, 10))
+            img.save(ntf, format='JPEG')
+            ntf.seek(0)
+            res = self.client.post(url, {'image': ntf}, format='multipart')
+
+        self.pin.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('image', res.data)
+        self.assertTrue(os.path.exists(self.pin.image.path))
+
+    def test_upload_image_bad_request(self):
+        """Test uploading an invalid image"""
+        url = image_upload_url(self.pin.id)
+        res = self.client.post(url, {'image': 'notimage'}, format='multipart')
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
