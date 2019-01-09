@@ -65,7 +65,7 @@ class ModelTests(TestCase):
         self.assertEqual(str(categories), categories.name)
 
     def test_pin_str(self):
-        """Test the recipe string representation"""
+        """Test the pin string representation"""
         pin = models.Pin.objects.create(
             user=sample_user(),
             business='Storville Coffee',

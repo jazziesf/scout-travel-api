@@ -62,7 +62,7 @@ class Tag(models.Model):
 
 
 class Categories(models.Model):
-    """Categories to be used in a recipe"""
+    """Categories to be used in a pin"""
     name = models.CharField(max_length=255)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,

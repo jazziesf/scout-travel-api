@@ -5,10 +5,11 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from core.models import Tag, Categories, Pin
+
 from pin import serializers
 
 
-class BasicPinAttrViewSet(viewsets.GenericViewSet,
+class BasePinAttrViewSet(viewsets.GenericViewSet,
                             mixins.ListModelMixin,
                             mixins.CreateModelMixin):
     """Base viewset for user owned pin attributes"""
@@ -17,44 +18,28 @@ class BasicPinAttrViewSet(viewsets.GenericViewSet,
 
     def get_queryset(self):
         """Return objects for the current authenticated user only"""
-        return self.queryset.filter(user=self.request.user).order_by('-name')
+        assigned_only = bool(self.request.query_params.get('assigned_only'))
+        queryset = self.queryset
+        if assigned_only:
+            queryset = queryset.filter(pin__isnull=False)
+
+        return queryset.filter(user=self.request.user).order_by('-name')
 
     def perform_create(self, serializer):
-        """Create a new ingredient"""
+        """Create a new object"""
         serializer.save(user=self.request.user)
 
 
-class TagViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin):
+class TagViewSet(BasePinAttrViewSet):
     """Manage tags in the database"""
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
     queryset = Tag.objects.all()
     serializer_class = serializers.TagSerializer
 
 
-    def get_queryset(self):
-        """Return objects for the current authenticated user only"""
-        return self.queryset.filter(user=self.request.user).order_by('-name')
-
-    def perform_create(self, serializer):
-        """Create a new categories"""
-        serializer.save(user=self.request.user)
-
-
-class CategoriesViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin):
+class CategoriesViewSet(BasePinAttrViewSet):
     """Manage categories in the database"""
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
     queryset = Categories.objects.all()
     serializer_class = serializers.CategoriesSerializer
-
-    def get_queryset(self):
-        """Return objects for the current authenticated user only"""
-        return self.queryset.filter(user=self.request.user).order_by('-name')
-
-    def perform_create(self, serializer):
-        """Create a new categories"""
-        serializer.save(user=self.request.user)
 
 
 class PinViewSet(viewsets.ModelViewSet):
@@ -69,7 +54,7 @@ class PinViewSet(viewsets.ModelViewSet):
         return [int(str_id) for str_id in qs.split(',')]
 
     def get_queryset(self):
-        """Retrieve the recipes for the authenticated user"""
+        """Retrieve the pin for the authenticated user"""
         tags = self.request.query_params.get('tags')
         categories = self.request.query_params.get('categories')
         queryset = self.queryset
@@ -77,8 +62,8 @@ class PinViewSet(viewsets.ModelViewSet):
             tag_ids = self._params_to_ints(tags)
             queryset = queryset.filter(tags__id__in=tag_ids)
         if categories:
-            categories_ids = self._params_to_ints(categories)
-            queryset = queryset.filter(categories__id__in=categories_ids)
+            ingredient_ids = self._params_to_ints(categories)
+            queryset = queryset.filter(categories__id__in=ingredient_ids)
 
         return queryset.filter(user=self.request.user)
 

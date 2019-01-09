@@ -5,7 +5,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import Categories
+from core.models import Categories, Pin
 
 from pin.serializers import CategoriesSerializer
 
@@ -82,3 +82,27 @@ class PrivateIngredientsAPITests(TestCase):
         res = self.client.post(CATEGORIES_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retrieve_categories_assigned_to_pin(self):
+        """Test filtering categories by those assigned to pins"""
+        categories1 = Categories.objects.create(
+            user=self.user, name='Burger'
+        )
+        categories2 = Categories.objects.create(
+            user=self.user, name='Rooftop'
+        )
+        pin = Pin.objects.create(
+            business= 'Bobs burgers',
+            city='Oakland',
+            state='CA',
+            details='Special of the Day is great',
+            user=self.user
+        )
+        pin.categories.add(categories1)
+
+        res = self.client.get(CATEGORIES_URL, {'assigned_only': 1})
+
+        serializer1 = CategoriesSerializer(categories1)
+        serializer2 = CategoriesSerializer(categories2)
+        self.assertIn(serializer1.data, res.data)
+        self.assertNotIn(serializer2.data, res.data)

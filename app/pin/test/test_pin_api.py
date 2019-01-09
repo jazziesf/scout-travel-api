@@ -52,7 +52,7 @@ def sample_pin(user, **params):
 
 
 class PublicPinApiTests(TestCase):
-    """Test unauthenticated recipe API access"""
+    """Test unauthenticated pin API access"""
 
     def setUp(self):
         self.client = APIClient()
@@ -65,7 +65,7 @@ class PublicPinApiTests(TestCase):
 
 
 class PrivatePinApiTests(TestCase):
-    """Test authenticated recipe API access"""
+    """Test authenticated pin API access"""
 
     def setUp(self):
         self.client = APIClient()
@@ -140,7 +140,7 @@ class PrivatePinApiTests(TestCase):
             'city': 'Seattle',
             'state': 'WA',
             'details': 'Best Coffee in Seattle',
-            'title': 'Test recipe with two tags',
+            'title': 'Test pin with two tags',
             'tags': [tag1.id, tag2.id]
         }
         res = self.client.post(PIN_URL, payload)
@@ -161,7 +161,7 @@ class PrivatePinApiTests(TestCase):
             'city': 'Seattle',
             'state': 'WA',
             'details': 'Best Coffee in Seattle',
-            'title': 'Test recipe with two tags',
+            'title': 'Test pin with two tags',
             'categories': [categories1.id, categories2.id]
         }
 
@@ -246,7 +246,7 @@ class PinImageUploadTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_filter_pin_by_tags(self):
-        """Test returning recipes with specific tags"""
+        """Test returning pins with specific tags"""
         pin1 = sample_pin(user=self.user, business='Bongos Cafe')
         pin2 = sample_pin(user=self.user, business='Andinas Restaurant')
         tag1 = sample_tag(user=self.user, name='Vegan')
@@ -268,7 +268,7 @@ class PinImageUploadTests(TestCase):
         self.assertNotIn(serializer3.data, res.data)
 
     def test_filter_pin_by_categories(self):
-        """Test returning recipes with specific ingredients"""
+        """Test returning pins with specific ingredients"""
         pin1 = sample_pin(user=self.user, business='Bobs Burgers')
         pin2 = sample_pin(user=self.user, business='Chicken Joes')
         categories1 = sample_categories(user=self.user, name='Coffee Shop')
