@@ -244,3 +244,47 @@ class PinImageUploadTests(TestCase):
         res = self.client.post(url, {'image': 'notimage'}, format='multipart')
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_filter_pin_by_tags(self):
+        """Test returning recipes with specific tags"""
+        pin1 = sample_pin(user=self.user, business='Bongos Cafe')
+        pin2 = sample_pin(user=self.user, business='Andinas Restaurant')
+        tag1 = sample_tag(user=self.user, name='Vegan')
+        tag2 = sample_tag(user=self.user, name='Vegetarian')
+        pin1.tags.add(tag1)
+        pin2.tags.add(tag2)
+        pin3 = sample_pin(user=self.user, business='Bobs Burgers')
+
+        res = self.client.get(
+            PIN_URL,
+            {'tags': '{},{}'.format(tag1.id, tag2.id)}
+        )
+
+        serializer1 = PinSerializer(pin1)
+        serializer2 = PinSerializer(pin2)
+        serializer3 = PinSerializer(pin3)
+        self.assertIn(serializer1.data, res.data)
+        self.assertIn(serializer2.data, res.data)
+        self.assertNotIn(serializer3.data, res.data)
+
+    def test_filter_pin_by_categories(self):
+        """Test returning recipes with specific ingredients"""
+        pin1 = sample_pin(user=self.user, business='Bobs Burgers')
+        pin2 = sample_pin(user=self.user, business='Chicken Joes')
+        categories1 = sample_categories(user=self.user, name='Coffee Shop')
+        categories2 = sample_categories(user=self.user, name='Rooftop Bar')
+        pin1.categories.add(categories1)
+        pin2.categories.add(categories2)
+        pin3 = sample_pin(user=self.user, business='Steakhouse Sams')
+
+        res = self.client.get(
+            PIN_URL,
+            {'categories': '{},{}'.format(categories1.id, categories2.id)}
+        )
+
+        serializer1 = PinSerializer(pin1)
+        serializer2 = PinSerializer(pin2)
+        serializer3 = PinSerializer(pin3)
+        self.assertIn(serializer1.data, res.data)
+        self.assertIn(serializer2.data, res.data)
+        self.assertNotIn(serializer3.data, res.data)
