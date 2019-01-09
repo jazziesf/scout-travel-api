@@ -52,7 +52,7 @@ class CategoriesViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.C
         return self.queryset.filter(user=self.request.user).order_by('-name')
 
     def perform_create(self, serializer):
-        """Create a new ingredient"""
+        """Create a new categories"""
         serializer.save(user=self.request.user)
 
 
@@ -66,3 +66,14 @@ class PinViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Retrieve the recipes for the authenticated user"""
         return self.queryset.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        """Return appropriate serializer class"""
+        if self.action == 'retrieve':
+            return serializers.PinDetailSerializer
+
+        return self.serializer_class
+
+    def perform_create(self, serializer):
+        """Create a new pin"""
+        serializer.save(user=self.request.user)

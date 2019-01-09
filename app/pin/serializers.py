@@ -38,3 +38,8 @@ class PinSerializer(serializers.ModelSerializer):
             'categories',
         )
         read_only_fields = ('id',)
+
+
+class PinDetailSerializer(PinSerializer):
+    categories = CategoriesSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
