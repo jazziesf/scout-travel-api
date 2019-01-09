@@ -1,7 +1,17 @@
+import uuid
+import os
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin
 from django.conf import settings
+
+
+def pin_image_file_path(instance, filename):
+    """Generate file path for new pin image"""
+    ext = filename.split('.')[-1]
+    filename = f'{uuid.uuid4()}.{ext}'
+
+    return os.path.join('uploads/pin/', filename)
 
 
 class UserManager(BaseUserManager):
@@ -75,6 +85,7 @@ class Pin(models.Model):
     state = models.CharField(max_length=20, null=True)
     categories = models.ManyToManyField('Categories')
     tags = models.ManyToManyField('Tag')
+    image = models.ImageField(upload_to=pin_image_file_path, null=True)
 
     def __str__(self):
         return self.business

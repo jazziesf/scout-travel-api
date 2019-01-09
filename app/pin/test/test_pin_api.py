@@ -161,3 +161,41 @@ class PrivatePinApiTests(TestCase):
         self.assertEqual(categories.count(), 2)
         self.assertIn(categories1, categories)
         self.assertIn(categories2, categories)
+
+    def test_partial_update_pin(self):
+        """Test updating a pin_id with patch"""
+        pin = sample_pin(user=self.user)
+        pin.tags.add(sample_tag(user=self.user))
+        new_tag = sample_tag(user=self.user, name='Curry')
+
+        payload = {'business': 'Bobs Burgers', 'tags': [new_tag.id]}
+        url = detail_url(pin.id)
+        self.client.patch(url, payload)
+
+        pin.refresh_from_db()
+        self.assertEqual(pin.business, payload['business'])
+        tags = pin.tags.all()
+        self.assertEqual(len(tags), 1)
+        self.assertIn(new_tag, tags)
+
+    def test_full_update_pin(self):
+        """Test updating a pin with put"""
+        pin = sample_pin(user=self.user)
+        pin.tags.add(sample_tag(user=self.user))
+
+        payload = {
+		    'business': 'Bobs burgers',
+            'city': 'Oakland',
+            'state': 'CA',
+            'details': 'Special of the Day is great',
+    		}
+        url = detail_url(pin.id)
+        self.client.put(url, payload)
+
+        pin.refresh_from_db()
+        self.assertEqual(pin.business, payload['business'])
+        self.assertEqual(pin.city, payload['city'])
+        self.assertEqual(pin.state, payload['state'])
+        self.assertEqual(pin.details, payload['details'])
+        tags = pin.tags.all()
+        self.assertEqual(len(tags), 0)
