@@ -80,7 +80,7 @@ class Pin(models.Model):
         on_delete=models.CASCADE
     )
     business = models.CharField(max_length=255)
-    details = models.CharField(max_length=100)
+    details = models.CharField(max_length=500)
     city = models.CharField(max_length=100, null=True)
     state = models.CharField(max_length=20, null=True)
     categories = models.ManyToManyField('Categories')
@@ -89,3 +89,15 @@ class Pin(models.Model):
 
     def __str__(self):
         return self.business
+
+class Board(models.Model):
+    pin = models.ManyToManyField('Pin')
+    # name = models.CharField(max_length=255)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+
+    def __str__(self):
+        return self.user.name

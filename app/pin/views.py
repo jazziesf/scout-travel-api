@@ -13,17 +13,17 @@ class BasePinAttrViewSet(viewsets.GenericViewSet,
                             mixins.ListModelMixin,
                             mixins.CreateModelMixin):
     """Base viewset for user owned pin attributes"""
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    # authentication_classes = (TokenAuthentication,)
+    # permission_classes = (IsAuthenticated,)
 
-    def get_queryset(self):
-        """Return objects for the current authenticated user only"""
-        assigned_only = bool(self.request.query_params.get('assigned_only'))
-        queryset = self.queryset
-        if assigned_only:
-            queryset = queryset.filter(pin__isnull=False)
-
-        return queryset.filter(user=self.request.user).order_by('-name')
+    # def get_queryset(self):
+    #     """Return objects for the current authenticated user only"""
+    #     assigned_only = bool(self.request.query_params.get('assigned_only'))
+    #     queryset = self.queryset
+    #     if assigned_only:
+    #         queryset = queryset.filter(pin__isnull=False)
+    #
+    #     return queryset.filter(user=self.request.user).order_by('-name')
 
     def perform_create(self, serializer):
         """Create a new object"""
@@ -46,8 +46,8 @@ class PinViewSet(viewsets.ModelViewSet):
     """Manage pin in the database"""
     serializer_class = serializers.PinSerializer
     queryset = Pin.objects.all()
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    # authentication_classes = (TokenAuthentication,)
+    # permission_classes = (IsAuthenticated,)
 
     def _params_to_ints(self, qs):
         """Convert a list of string IDs to a list of integers"""
@@ -65,7 +65,8 @@ class PinViewSet(viewsets.ModelViewSet):
             ingredient_ids = self._params_to_ints(categories)
             queryset = queryset.filter(categories__id__in=ingredient_ids)
 
-        return queryset.filter(user=self.request.user)
+        return queryset.filter()
+        # queryset.filter(user=self.request.user) this may query by only users removed it
 
     def get_serializer_class(self):
         """Return appropriate serializer class"""
@@ -78,7 +79,10 @@ class PinViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Create a new pin"""
-        serializer.save(user=self.request.user)
+        return serializer.save()
+        # serializer.save(user=self.request.user)
+        # this was causing me errors removed it to work in frontend but
+        #need to add it back again error expecting User instance
 
     @action(methods=['POST'], detail=True, url_path='upload-image')
     def upload_image(self, request, pk=None):

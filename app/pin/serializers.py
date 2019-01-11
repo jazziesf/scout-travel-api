@@ -1,6 +1,5 @@
 from rest_framework import serializers
-
-from core.models import Tag, Categories, Pin
+from core.models import Tag, Categories, Pin, User
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -35,7 +34,7 @@ class PinSerializer(serializers.ModelSerializer):
         model = Pin
         fields = (
             'id', 'business', 'city', 'tags', 'state', 'details',
-            'categories',
+            'categories', 'image', 'user'
         )
         read_only_fields = ('id',)
 
