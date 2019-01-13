@@ -1,5 +1,8 @@
 from rest_framework import serializers
+from pin.serializers import PinSerializer
+from user.serializers import UserSerializer
 
+# added this to see if we can get details
 from core.models import Board, Pin
 
 class BoardSerializer(serializers.ModelSerializer):
@@ -11,5 +14,8 @@ class BoardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Board
-        fields = ('pin', 'user',)
-        # read_only_fields = ('id',)
+        fields = ( 'pin', 'user',)
+
+class BoardDetailSerializer(BoardSerializer):
+    pin = PinSerializer(many=True, read_only=True)
+    # user = UserSerializer(read_only=True)

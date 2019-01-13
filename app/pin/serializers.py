@@ -34,7 +34,7 @@ class PinSerializer(serializers.ModelSerializer):
         model = Pin
         fields = (
             'id', 'business', 'city', 'tags', 'state', 'details',
-            'categories', 'image', 'user'
+            'categories', 'image', 'user', 'likes'
         )
         read_only_fields = ('id',)
 

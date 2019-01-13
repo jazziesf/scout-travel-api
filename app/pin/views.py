@@ -7,23 +7,24 @@ from rest_framework.permissions import IsAuthenticated
 from core.models import Tag, Categories, Pin
 
 from pin import serializers
+# from . import requests
 
 
 class BasePinAttrViewSet(viewsets.GenericViewSet,
                             mixins.ListModelMixin,
                             mixins.CreateModelMixin):
     """Base viewset for user owned pin attributes"""
-    # authentication_classes = (TokenAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
 
-    # def get_queryset(self):
-    #     """Return objects for the current authenticated user only"""
-    #     assigned_only = bool(self.request.query_params.get('assigned_only'))
-    #     queryset = self.queryset
-    #     if assigned_only:
-    #         queryset = queryset.filter(pin__isnull=False)
-    #
-    #     return queryset.filter(user=self.request.user).order_by('-name')
+    def get_queryset(self):
+        """Return objects for the current authenticated user only"""
+        assigned_only = bool(self.request.query_params.get('assigned_only'))
+        queryset = self.queryset
+        if assigned_only:
+            queryset = queryset.filter(pin__isnull=False)
+
+        return queryset.filter(user=self.request.user).order_by('-name')
 
     def perform_create(self, serializer):
         """Create a new object"""
@@ -46,8 +47,10 @@ class PinViewSet(viewsets.ModelViewSet):
     """Manage pin in the database"""
     serializer_class = serializers.PinSerializer
     queryset = Pin.objects.all()
-    # authentication_classes = (TokenAuthentication,)
-    # permission_classes = (IsAuthenticated,)
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    # ////// move your view for guest users /////////
+
 
     def _params_to_ints(self, qs):
         """Convert a list of string IDs to a list of integers"""
@@ -79,7 +82,8 @@ class PinViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Create a new pin"""
-        return serializer.save()
+        return serializer.save(user=self.request.user)
+
         # serializer.save(user=self.request.user)
         # this was causing me errors removed it to work in frontend but
         #need to add it back again error expecting User instance

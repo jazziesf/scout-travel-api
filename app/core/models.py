@@ -5,7 +5,6 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin
 from django.conf import settings
 
-
 def pin_image_file_path(instance, filename):
     """Generate file path for new pin image"""
     ext = filename.split('.')[-1]
@@ -86,6 +85,8 @@ class Pin(models.Model):
     categories = models.ManyToManyField('Categories')
     tags = models.ManyToManyField('Tag')
     image = models.ImageField(null=True, upload_to=pin_image_file_path)
+    likes = models.IntegerField(default=0)
+
 
     def __str__(self):
         return self.business
