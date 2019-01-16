@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, request
 from pin.serializers import PinSerializer
 from user.serializers import UserSerializer
 
@@ -15,6 +15,19 @@ class BoardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
         fields = ( 'pin', 'user',)
+
+    # def update(self, instance, validated_data):
+    #     """Update a user, setting the password correctly and return it"""
+    #     pin = (self)
+    #     print(pin)
+    #     board = super().update()
+    #     print(board.user.id)
+    #
+    #     board.pin.add(Pin.objects.get(self.request))
+    #     board.save
+    #
+    #     return board
+
 
 class BoardDetailSerializer(BoardSerializer):
     pin = PinSerializer(many=True, read_only=True)

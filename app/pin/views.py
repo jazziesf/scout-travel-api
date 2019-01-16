@@ -60,13 +60,22 @@ class PinViewSet(viewsets.ModelViewSet):
         """Retrieve the pin for the authenticated user"""
         tags = self.request.query_params.get('tags')
         categories = self.request.query_params.get('categories')
+        state = self.request.query_params.get('state')
+        city = self.request.query_params.get('city')
+
         queryset = self.queryset
+
         if tags:
             tag_ids = self._params_to_ints(tags)
             queryset = queryset.filter(tags__id__in=tag_ids)
         if categories:
             ingredient_ids = self._params_to_ints(categories)
             queryset = queryset.filter(categories__id__in=ingredient_ids)
+        if state:
+            queryset = queryset.filter(state=state)
+        if city:
+            queryset = queryset.filter(city=city)
+
 
         return queryset.filter()
         # queryset.filter(user=self.request.user) this may query by only users removed it

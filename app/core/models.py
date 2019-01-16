@@ -86,6 +86,7 @@ class Pin(models.Model):
     tags = models.ManyToManyField('Tag')
     image = models.ImageField(null=True, upload_to=pin_image_file_path)
     likes = models.IntegerField(default=0)
+    dish = models.CharField(max_length=255)
 
 
     def __str__(self):

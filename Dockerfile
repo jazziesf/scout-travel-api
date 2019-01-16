@@ -10,6 +10,7 @@ RUN apk add --update --no-cache --virtual .tmp-build-deps gcc libc-dev linux-hea
 RUN pip install -r /requirements.txt
 RUN apk del .tmp-build-deps
 RUN pip install django-cors-headers
+RUN pip install drf-nested-routers
 
 
 # Setup directory structure
