@@ -4,7 +4,7 @@ from rest_framework import viewsets, mixins, status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from core.models import Tag, Categories, Pin
+from core.models import Tag, Categories, Pin, Board
 
 from pin import serializers
 # from . import requests
@@ -21,8 +21,10 @@ class BasePinAttrViewSet(viewsets.GenericViewSet,
         """Return objects for the current authenticated user only"""
         assigned_only = bool(self.request.query_params.get('assigned_only'))
         queryset = self.queryset
+
         if assigned_only:
             queryset = queryset.filter(pin__isnull=False)
+            print(queryset)
 
         return queryset.filter(user=self.request.user).order_by('-name')
 
@@ -62,8 +64,14 @@ class PinViewSet(viewsets.ModelViewSet):
         categories = self.request.query_params.get('categories')
         state = self.request.query_params.get('state')
         city = self.request.query_params.get('city')
+        #//////////////////////////////////////////////////////////
+        # print("PPPIINNNNN VIEW")
+        # only renders pins not on your board but wont render the id for myboard details
+        # board = Board.objects.filter(user=self.request.user)
+        # queryset = self.queryset.exclude(board=board)
 
         queryset = self.queryset
+
 
         if tags:
             tag_ids = self._params_to_ints(tags)
@@ -72,11 +80,12 @@ class PinViewSet(viewsets.ModelViewSet):
             ingredient_ids = self._params_to_ints(categories)
             queryset = queryset.filter(categories__id__in=ingredient_ids)
         if state:
-            queryset = queryset.filter(state__istartswith=state)
+            queryset = queryset.filter(state=state)
         if city:
-            queryset = queryset.filter(city=city) or queryset.filter(city__startswith=city[0])
+            queryset = queryset.filter(city__contains=city) or queryset.filter(city__startswith=city[0])
+            # queryset.filter(city=city)
 
-        return queryset
+        return queryset.filter()
         # queryset.filter(user=self.request.user) this may query by only users removed it
 
     def get_serializer_class(self):

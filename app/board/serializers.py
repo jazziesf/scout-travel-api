@@ -1,5 +1,5 @@
 from rest_framework import serializers, request
-from pin.serializers import PinSerializer
+from pin.serializers import PinSerializer, TagSerializer, CategoriesSerializer
 from user.serializers import UserSerializer
 
 # added this to see if we can get details
@@ -16,7 +16,6 @@ class BoardSerializer(serializers.ModelSerializer):
         model = Board
         fields = ( 'pin', 'user',)
 
-
-class BoardDetailSerializer(BoardSerializer):
+class BoardDetailSerializer(BoardSerializer, PinSerializer):
     pin = PinSerializer(many=True, read_only=True)
     # user = UserSerializer(read_only=True)
