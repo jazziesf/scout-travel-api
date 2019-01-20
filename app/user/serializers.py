@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import ugettext_lazy as _
+from core.models import Board
 # this is a translation _ if you want to tranlate into another language
 from rest_framework import serializers
 
@@ -16,7 +17,9 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # validated data is the inform from the post request
         """Create a new user with encrypted password and return it"""
-        return get_user_model().objects.create_user(**validated_data)
+        user = get_user_model().objects.create_user(**validated_data)
+        Board.objects.create(user=user)
+        return user
 
     def update(self, instance, validated_data):
         """Update a user, setting the password correctly and return it"""

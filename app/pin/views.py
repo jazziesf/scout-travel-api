@@ -72,12 +72,11 @@ class PinViewSet(viewsets.ModelViewSet):
             ingredient_ids = self._params_to_ints(categories)
             queryset = queryset.filter(categories__id__in=ingredient_ids)
         if state:
-            queryset = queryset.filter(state=state)
+            queryset = queryset.filter(state__istartswith=state)
         if city:
-            queryset = queryset.filter(city=city)
+            queryset = queryset.filter(city=city) or queryset.filter(city__startswith=city[0])
 
-
-        return queryset.filter()
+        return queryset
         # queryset.filter(user=self.request.user) this may query by only users removed it
 
     def get_serializer_class(self):

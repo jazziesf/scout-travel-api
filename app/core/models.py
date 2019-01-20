@@ -93,7 +93,7 @@ class Pin(models.Model):
         return self.business
 
 class Board(models.Model):
-    pin = models.ManyToManyField('Pin')
+    pin = models.ManyToManyField('Pin', blank=True)
     # name = models.CharField(max_length=255)
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,

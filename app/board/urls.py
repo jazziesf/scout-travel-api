@@ -10,6 +10,7 @@ router.register('board', views.BoardViewSet)
 
 domains_router = routers.NestedSimpleRouter(router, r'board', lookup='board')
 domains_router.register(r'pins', views.BoardPinViewSet, base_name='board-pins')
+# domains_router.register(r'pins', views.BoardPinViewSet, base_name='board-pins')
 
 app_name = 'board'
 

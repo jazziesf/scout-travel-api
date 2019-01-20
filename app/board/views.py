@@ -23,21 +23,11 @@ class BoardViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Retrieve the pin for the authenticated user"""
-
-        # pin_id = self.request.query_params
-        # print(pin_id)
-        # # pin_ids = self._params_to_ints(pin)
-        # body = json.loads(self.request.body)
-        # print(body)
-        # # pin_id = body['pin']['id']
-        # board = Board.objects.get(user=self.request.user.id)
-        # print(board, 'im the board')
-        # # board.save()
-        # board.pin.add(pin_id)
+        pin = self.request.query_params.get('pin')
         queryset = self.queryset
 
-        # if pin:
-        #     queryset = queryset.filter(pin__id__in=pin_ids)
+        if pin:
+            queryset = queryset.filter(pin__id__in=pin_ids)
 
         return queryset.filter()
 
@@ -56,8 +46,6 @@ class BoardViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Create a new board"""
         serializer.save(user=self.request.user)
-        #add this when you have a user attact to the board
-        # serializer.save(user=self.request.user)
 
 
 class BoardPinViewSet(viewsets.ModelViewSet):
@@ -67,6 +55,9 @@ class BoardPinViewSet(viewsets.ModelViewSet):
 
     @action(methods=['POST'], detail=True, url_path='add')
     def add_pin(self, request, board_pk=None, pk=None):
+        print("////////////////////////")
+        print(board_pk)
+        print(pk)
         body = json.loads(self.request.body)
         board = Board.objects.get(user_id=board_pk)
         pin = Pin.objects.get(id=pk)
@@ -74,15 +65,10 @@ class BoardPinViewSet(viewsets.ModelViewSet):
 
         board.pin.add(pin)
 
-        # pin = request.POST
-        # print(pin,"im the request")
         serializer = self.get_serializer(
             board,
             data=request.data
         )
-
-        # pdb.set_trace();
-        # board.save()
 
         if serializer.is_valid():
             serializer.save()
@@ -96,27 +82,28 @@ class BoardPinViewSet(viewsets.ModelViewSet):
             status=status.HTTP_400_BAD_REQUEST
         )
 
+    @action(methods=['DELETE'], detail=True, url_path='remove')
+    def remove_pin(self, request, board_pk=None, pk=None):
+        body = json.loads(self.request.body)
+        board = Board.objects.get(user_id=board_pk)
+        pin = Pin.objects.get(id=pk)
 
-    #     serializer_class = serializers.BoardSerializer
-    #
-    #     print('yo')
-    #     board = Board.objects.get(user=4)
-    #     return Response(board,status=status.HTTP_200_OK)
-    # @action(methods=['GET'], detail=True, url_path='1/')
-    # def pin_to_board(self, request):
-    #     """Add a Pin to Board"""
-    #     print("blah")
-    #     # board = Board.objects.get(id=id)
-    #     # print(board)
-    #     return '["yay!"]'
-        # board.pin.add(pin)
-        # board.save()
+        board.pin.remove(pin)
 
-# class ManageBoardView(generics.RetrieveUpdateAPIView):
-#     """Manage the authenticated user"""
-#     serializer_class = BoardSerializer
-#     authentication_classes = (authentication.TokenAuthentication,)
-#     permission_classes = (permissions.IsAuthenticated,)
-#
-#     def get_object(self):
-#         return self.request.user
+        serializer = self.get_serializer(
+            board,
+            data=request.data
+        )
+
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
