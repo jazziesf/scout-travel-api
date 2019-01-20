@@ -28,3 +28,16 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=supersecretpassword
       # in production you will change this password when you deploy
+
+  # web:
+  #   build:
+  #     context: .
+  #   ports:
+  #     - "${PORT}:${PORT}"
+  #   command: >
+  #     sh -c "python manage.py wait_for_db && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+  #   environment:
+  #     - DB_HOST=ec2-54-83-50-174.compute-1.amazonaws.com
+  #     - DB_NAME=d7amock6vml2kn
+  #     - DB_USER=mlfhencfolursx
+  #     - DB_PASS=e14d6da0db8c5310cd2f71f168b0cbc6e561700b5eb9f575b6131645dcda33b6

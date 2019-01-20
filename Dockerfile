@@ -1,6 +1,5 @@
 FROM python:3.7-alpine
 MAINTAINER Capstone Ada
-
 ENV PYTHONUNBUFFERED 1
 
 # Install dependencies
@@ -11,6 +10,7 @@ RUN pip install -r /requirements.txt
 RUN apk del .tmp-build-deps
 RUN pip install django-cors-headers
 RUN pip install drf-nested-routers
+
 
 
 # Setup directory structure
@@ -24,3 +24,5 @@ RUN adduser -D user
 RUN chown -R user:user /vol/
 RUN chmod -R 755 /vol/web
 USER user
+
+CMD python manage.py wait_for_db && python manage.py migrate && python manage.py runserver 0.0.0.0:$PORT

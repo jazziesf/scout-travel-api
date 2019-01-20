@@ -25,7 +25,7 @@ SECRET_KEY = 'f24s-9(1h6igtl@orl^+9!=)ea)j4=%twet)11a55gr0mu6#cm'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["fast-reaches-52593.herokuapp.com","127.0.0.1",]
 
 
 # Application definition
@@ -63,7 +63,10 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS=True
 
 CORS_ORIGIN_WHITELIST = (
-    'localhost:3000'
+    'localhost:3000',
+    "fast-reaches-52593.herokuapp.com",
+    "app-nosher.herokuapp.com",
+    "127.0.0.1"
     )
 
 CORS_ALLOW_METHODS = (

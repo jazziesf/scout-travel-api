@@ -84,7 +84,6 @@ class PinViewSet(viewsets.ModelViewSet):
         if city:
             queryset = queryset.filter(city__contains=city) or queryset.filter(city__startswith=city[0])
             # queryset.filter(city=city)
-
         return queryset.filter()
         # queryset.filter(user=self.request.user) this may query by only users removed it
 
@@ -125,3 +124,19 @@ class PinViewSet(viewsets.ModelViewSet):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
+
+class AvailablePinViewSet(PinViewSet):
+
+    def get_queryset(self):
+        """Retrieve the pin for the authenticated user"""
+        board = Board.objects.get(user=self.request.user)
+
+        return super().get_queryset().exclude(board=board)
+
+class MyPinsViewSet(PinViewSet):
+
+    def get_queryset(self):
+        """Retrieve the pin for the authenticated user"""
+        board = Board.objects.get(user=self.request.user)
+
+        return super().get_queryset().filter(board=board)
